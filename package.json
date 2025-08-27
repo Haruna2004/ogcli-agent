@@ -1,0 +1,21 @@
+{
+  "name": "ogcli-agent",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "bun run src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "conf": "^14.0.0",
+    "inquirer": "^12.9.4",
+    "openai": "^5.16.0",
+    "ora": "^8.2.0"
+  }
+}
