@@ -1,5 +1,6 @@
 import ora from "ora";
 import inquirer from "inquirer";
+import type { ChatCompletionMessageParam as Message } from "openai/resources/chat/completions";
 import OpenAI from "openai";
 
 const client = new OpenAI({
@@ -7,17 +8,12 @@ const client = new OpenAI({
   baseURL: "https://api.groq.com/openai/v1",
 });
 
-type Message = {
-  content: string;
-  role: string;
-};
-
 export class ChatSession {
   private conversation: Message[] = [];
 
   async getResponse(messages: Message[]) {
     const result = await client.chat.completions.create({
-      messages: messages as any,
+      messages: messages,
       model: "llama-3.3-70b-versatile",
     });
     const text = result.choices[0]?.message.content;
