@@ -15,13 +15,33 @@ type Message = {
 export class ChatSession {
   private conversation: Message[] = [];
 
-  constructor() {}
+  async getResponse(messages: Message[]) {
+    const result = await client.chat.completions.create({
+      messages: messages as any,
+      model: "llama-3.3-70b-versatile",
+    });
+    const text = result.choices[0]?.message.content;
+
+    return { text };
+  }
+
+  async getInput(): Promise<string> {
+    const { input } = await inquirer.prompt([
+      {
+        type: "input",
+        name: "input",
+        message: "> ",
+      },
+    ]);
+
+    return input;
+  }
 
   async start() {
     const spinner = ora();
 
     while (true) {
-      const userInput = await this.getChatInput();
+      const userInput = await this.getInput();
 
       if (userInput.toLowerCase() === "/exit") {
         console.log("Goodbye!");
@@ -37,7 +57,7 @@ export class ChatSession {
       spinner.color = "magenta";
       spinner.start();
 
-      const { text } = await this.startAgent(this.conversation);
+      const { text } = await this.getResponse(this.conversation);
 
       spinner.stop();
 
@@ -46,27 +66,5 @@ export class ChatSession {
         this.conversation.push({ role: "assistant", content: text });
       }
     }
-  }
-
-  async startAgent(messages: Message[]) {
-    const result = await client.chat.completions.create({
-      messages: messages as any,
-      model: "openai/gpt-oss-20b",
-    });
-    const text = result.choices[0]?.message.content;
-
-    return { text };
-  }
-
-  async getChatInput(): Promise<string> {
-    const { input } = await inquirer.prompt([
-      {
-        type: "input",
-        name: "input",
-        message: "> ",
-      },
-    ]);
-
-    return input;
   }
 }
